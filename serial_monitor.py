@@ -29,7 +29,7 @@ def getDataDirection(data):
 	pass
 
 def recordData(direction, date):
-	print direction + " " + date
+	print(direction, " ", date) #TODO database recording
 	pass
 
 def readSerial(serialDevice):
@@ -39,15 +39,21 @@ def readSerial(serialDevice):
 		recordData(getDataDirection(serialData), getDataDate(serialData))
 		return readSerial(serialDevice)
 	except:
-		print "Failed to read Serial data"
+		print("Failed to read Serial data")
 		return
 	pass
 
-try:
-	print "Trying...",serialPort 
-	arduinoBoard = serial.Serial(serialPort, 9600) 
-except: 
-	print "Failed to connect on",serialPort
+def serialConnect(port):
+	return serial.Serial(port, 9600)
+	pass
 
-readSerial(arduinoBoard)
+
+try:
+	print("Connecting on ",serialPort) 
+	arduinoBoard = serialConnect(serialPort) 
+	readSerial(arduinoBoard)
+except: 
+	print("Failed to connect on ", serialPort)
+
+print("Aplication ended")
 
