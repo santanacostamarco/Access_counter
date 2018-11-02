@@ -13,7 +13,7 @@ dbConn = mysql.connector.connect(
 
 dbCursor = dbConn.cursor()
 
-serialPort = "/dev/ttyACM0" # Serial port used by Arduino board, it may change.
+serialPort = "COM4" # Serial port used by Arduino board, it may change.
 
 def clearData(data):
 	data = data.replace("\\r\\n", '')
