@@ -9,3 +9,8 @@
 ## Linux installation
 
     pip install -r requirements.txt
+
+or 
+
+	sudo python -m pip install pyserial
+	sudo python -m pip install mysql-connector
