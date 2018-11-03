@@ -18,4 +18,4 @@ or
 
 ## Circuit
 
-![Graphic sketch](https://raw.githubusercontent.com/santannacostamarco/Access_counter/graphic_sketch/graphic_sketch/access_control_circuit.png)
+![Graphic sketch](https://raw.githubusercontent.com/santannacostamarco/Access_counter/master/graphic_sketch/access_control_circuit.png)
