@@ -57,27 +57,27 @@ void loop() {
     firstSensor = activated;
   else if (activated != firstSensor and secondSensor == 0) {
     secondSensor = activated;
-    
-    Serial.println(getDirection(firstSensor, secondSensor) + ' ' + getTime());
+    DateTime rtcTime = RTC.now();
+    Serial.println("{\"direction\": \"" + getDirection(firstSensor, secondSensor) + "\", \"date\": \"" + getDate(rtcTime) + "\", \"time\": \"" + getTime(rtcTime) + "\"}");
   }
     
 }
 
 String getDirection(int first, int second) {
   if (first == 1 and second == 2)
-    return "i";
+    return "in";
   else 
-    return "o";
+    return "out";
 }
 
-String getTime() {
+String getDate(DateTime now) {
   String dateStr;
-  String timeStr;
-
-  DateTime now = RTC.now();
-
   dateStr = String(now.year()) + '-' + String(now.month()) + '-' + String(now.day());
-  timeStr = String(now.hour()) + ':' + String(now.minute()) + ':' + String(now.second());
+  return dateStr;  
+}
 
-  return dateStr + ' ' + timeStr;  
+String getTime(DateTime now) {
+  String timeStr;
+  timeStr = String(now.hour()) + ':' + String(now.minute()) + ':' + String(now.second());
+  return timeStr;  
 }

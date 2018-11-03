@@ -1,3 +1,4 @@
+import json
 import serial
 import mysql.connector
 
@@ -10,39 +11,33 @@ try:
     )
         
     dbCursor = dbConn.cursor()
-except:
-    print("Couldn't connect to the database")
+except Exception as e:
+    print("Couldn't connect to the database\n",e)
 
 
 
 serialPort = "COM4" # Serial port used by Arduino board, it may change.
 
-def clearData(data):
-    data = data #.replace("\\r\\n", '')
-    return data #.split(" ")
+def clearString(data):
+    return json.loads(data[data.index("{") : data.index("}") + 1])
     pass
 
-def getDataDate(data):
-    return data[1] + " " + data[2]
-    pass
-
-def getDataDirection(data):
-    return data[0]
-    pass
-
-def recordData(direction, date):
-    print(direction, " ", date) #TODO database recording
+def recordData(data):
+    #TODO database recording
+    print("direction: ",data["direction"],"\n")
+    print("date: ",data["date"],"\n")
+    print("time: ",data["time"],"\n") 
     pass
 
 def readSerial(serialDevice):
     try:
-        serialData = arduinoBoard.readline()
-        serialData = clearData(serialData)
-        #recordData(getDataDirection(serialData), getDataDate(serialData))
-        print(serialData)
-        return readSerial( serialDevice )
-    except:
-        print("Failed to read Serial data")
+        serialData = str(arduinoBoard.readline())
+        serialData = clearString(serialData)
+        recordData(serialData)
+        
+        return readSerial(serialDevice)
+    except Exception as e:
+        print("Failed to read Serial data\n",e)
         return
     pass    
 
@@ -52,12 +47,12 @@ def serialConnect(port):
 
 
 try:
-    print("Connecting on ",serialPort) 
+    print("Connecting on ",serialPort,"...") 
     arduinoBoard = serialConnect(serialPort)
-    print("reading ",serialPort)
+    print("Reading ",serialPort,"...")
     readSerial(arduinoBoard)
-except: 
-    print("Failed to connect on ", serialPort)
+except Exception as e: 
+    print("Failed process the application\n",e)
 
-print("Aplication ended")
+print("\nAplication ended")
 
