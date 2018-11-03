@@ -24,9 +24,10 @@ def clearString(data):
 
 def recordData(data):
     #TODO database recording
-    print("direction: ",data["direction"],"\n")
-    print("date: ",data["date"],"\n")
-    print("time: ",data["time"],"\n") 
+    queryStr = "INSERT INTO access_info ( direction, time) VALUES ( %s, %s )"
+    queryData = (data["direction"][0], data["date"] + " " + data["time"])
+    dbCursor.execute(queryStr, queryData)
+    print(queryData)
     pass
 
 def readSerial(serialDevice):
