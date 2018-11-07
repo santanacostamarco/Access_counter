@@ -7,7 +7,7 @@ try:
         host = "127.0.0.1", # localhost mysql server (can be a remote server)
         user = "root", 
         passwd = "root", 
-        database = "contador_acesso"
+        database = "bibliotecaDB"
     )
         
     dbCursor = dbConn.cursor()
@@ -24,9 +24,10 @@ def clearString(data):
 
 def recordData(data):
     #TODO database recording
-    queryStr = "INSERT INTO access_info ( direction, time) VALUES ( %s, %s )"
-    queryData = (data["direction"][0], data["date"] + " " + data["time"])
+    queryStr = "INSERT INTO movimento ( movimento, data_hora, quantidade) VALUES ( %s, %s, %s )"
+    queryData = (data["direction"], data["date"] + " " + data["time"], data["quantity"])
     dbCursor.execute(queryStr, queryData)
+    dbConn.commit()
     print(queryData)
     pass
 
@@ -54,6 +55,8 @@ try:
     readSerial(arduinoBoard)
 except Exception as e: 
     print("Failed process the application\n",e)
-
+    
+dbCursor.close()
+dbConn.close()
 print("\nAplication ended")
 
