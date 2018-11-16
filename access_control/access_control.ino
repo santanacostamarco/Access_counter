@@ -6,8 +6,8 @@ RTC_DS1307 RTC;
 // PINS
 const int insideLaser = 6;
 const int outsideLaser = 9;
-const int outsideSensor = 7;
-const int insideSensor = 8;
+const int outsideSensor = 3;
+const int insideSensor = 4;
 
 // GLOBAL VARIABLES
 int firstSensor = 0;
