@@ -54,7 +54,7 @@ try:
     print("Reading ",serialPort,"...")
     readSerial(arduinoBoard)
 except Exception as e: 
-    print("Failed process the application\n",e)
+    print("Failed processing the application\n",e)
     
 dbCursor.close()
 dbConn.close()

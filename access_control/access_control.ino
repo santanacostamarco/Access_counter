@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <RTClib.h>
 
+// RTC type declaration
 RTC_DS1307 RTC;
 
 // PINS
