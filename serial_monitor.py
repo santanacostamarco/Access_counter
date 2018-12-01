@@ -1,18 +1,28 @@
 import json
 import serial
 import mysql.connector
+import time
+import os
+
+def writeLogs(message):
+    timestamp = str(time.time()).split('.')[0]
+    f = open('logs/%s.log' % timestamp, 'w')
+    f.write(message)
+    f.close()
+    print('written logs on %s\\logs\\%s.log' % (os.getcwd(), timestamp))
+    pass
 
 try:
     dbConn = mysql.connector.connect(
-        host = "127.0.0.1", # localhost mysql server (can be a remote server)
-        user = "root", 
-        passwd = "root", 
-        database = "bibliotecaDB"
+        host = "127.0.0.1", # Localhost mysql server (can be a remote server)
+        user = "root", # Set server username
+        passwd = "root", # Set server user password
+        database = "bibliotecaDB" # Set database name
     )
         
     dbCursor = dbConn.cursor()
 except Exception as e:
-    print("Couldn't connect to the database\n",e)
+    writeLogs("Couldn't connect to the database\n%s" % e)
 
 
 
@@ -28,7 +38,6 @@ def recordData(data):
     queryData = (data["direction"], data["date"] + " " + data["time"], data["quantity"])
     dbCursor.execute(queryStr, queryData)
     dbConn.commit()
-    print(queryData)
     pass
 
 def readSerial(serialDevice):
@@ -39,7 +48,7 @@ def readSerial(serialDevice):
         
         return readSerial(serialDevice)
     except Exception as e:
-        print("Failed to read Serial data\n",e)
+        writeLogs("Failed to read Serial data\n%s" % e)
         return
     pass    
 
@@ -54,9 +63,10 @@ try:
     print("Reading ",serialPort,"...")
     readSerial(arduinoBoard)
 except Exception as e: 
-    print("Failed processing the application\n",e)
+    writeLogs("Failed processing the application\n%s" % e)
     
 dbCursor.close()
 dbConn.close()
+input("Press ENTER to quit\n")
 print("\nAplication ended")
 
