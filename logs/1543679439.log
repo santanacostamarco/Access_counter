@@ -1,0 +1,2 @@
+Failed processing the application
+could not open port 'COM40': FileNotFoundError(2, 'O sistema não pode encontrar o arquivo especificado.', None, 2)

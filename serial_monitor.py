@@ -1,48 +1,54 @@
+import json
 import serial
 import mysql.connector
+import time
+import os
+
+def writeLogs(message):
+    timestamp = str(time.time()).split('.')[0]
+    f = open('logs/%s.log' % timestamp, 'w')
+    f.write(message)
+    f.close()
+    print('written logs on %s\\logs\\%s.log' % (os.getcwd(), timestamp))
+    pass
 
 try:
     dbConn = mysql.connector.connect(
-        host = "127.0.0.1", # localhost mysql server (can be a remote server)
-        user = "root", 
-        passwd = "root", 
-        database = "contador_acesso"
+        host = "127.0.0.1", # Localhost mysql server (can be a remote server)
+        user = "root", # Set server username
+        passwd = "root", # Set server user password
+        database = "bibliotecaDB" # Set database name
     )
         
     dbCursor = dbConn.cursor()
-except:
-    print("Couldn't connect to the database")
+except Exception as e:
+    writeLogs("Couldn't connect to the database\n%s" % e)
 
 
 
 serialPort = "COM4" # Serial port used by Arduino board, it may change.
 
-def clearData(data):
-    data = data #.replace("\\r\\n", '')
-    return data #.split(" ")
+def clearString(data):
+    return json.loads(data[data.index("{") : data.index("}") + 1])
     pass
 
-def getDataDate(data):
-    return data[1] + " " + data[2]
-    pass
-
-def getDataDirection(data):
-    return data[0]
-    pass
-
-def recordData(direction, date):
-    print(direction, " ", date) #TODO database recording
+def recordData(data):
+    #TODO database recording
+    queryStr = "INSERT INTO movimento ( movimento, data_hora, quantidade) VALUES ( %s, %s, %s )"
+    queryData = (data["direction"], data["date"] + " " + data["time"], data["quantity"])
+    dbCursor.execute(queryStr, queryData)
+    dbConn.commit()
     pass
 
 def readSerial(serialDevice):
     try:
-        serialData = arduinoBoard.readline()
-        serialData = clearData(serialData)
-        #recordData(getDataDirection(serialData), getDataDate(serialData))
-        print(serialData)
-        return readSerial( serialDevice )
-    except:
-        print("Failed to read Serial data")
+        serialData = str(arduinoBoard.readline())
+        serialData = clearString(serialData)
+        recordData(serialData)
+        
+        return readSerial(serialDevice)
+    except Exception as e:
+        writeLogs("Failed to read Serial data\n%s" % e)
         return
     pass    
 
@@ -52,12 +58,15 @@ def serialConnect(port):
 
 
 try:
-    print("Connecting on ",serialPort) 
+    print("Connecting on ",serialPort,"...") 
     arduinoBoard = serialConnect(serialPort)
-    print("reading ",serialPort)
+    print("Reading ",serialPort,"...")
     readSerial(arduinoBoard)
-except: 
-    print("Failed to connect on ", serialPort)
-
-print("Aplication ended")
+except Exception as e: 
+    writeLogs("Failed processing the application\n%s" % e)
+    
+dbCursor.close()
+dbConn.close()
+input("Press ENTER to quit\n")
+print("\nAplication ended")
 
