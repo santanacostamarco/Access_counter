@@ -1,8 +1,11 @@
-#include <Wire.h>
-#include <RTClib.h>
+#include <Time.h>
+#include <TimeLib.h>
+#include <DS1302RTC.h>
 
-// RTC type declaration
-RTC_DS1307 RTC;
+// Set pins:  RST, DAT,CLK
+DS1302RTC RTC(2, 8, 7);
+
+
 
 // PINS
 const int insideLaser = 6;
@@ -18,10 +21,9 @@ int activated = 0;
 
 void setup() {
   Serial.begin(9600);
-  Wire.begin();
-  RTC.begin();
-  RTC.adjust(DateTime(F(__DATE__), F(__TIME__)));
-  //RTC.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+
+  // UNIX Timestamp
+//   RTC.set(1544264040); // Time = 10:14:00, Date (D/M/Y) = 8/12/2018, DoW = 7
 
   
   pinMode(outsideLaser, OUTPUT);
@@ -59,8 +61,16 @@ void loop() {
     firstSensor = activated;
   else if (activated != firstSensor and secondSensor == 0) {
     secondSensor = activated;
-    DateTime rtcTime = RTC.now();
-    Serial.println("{\"direction\": \"" + getDirection(firstSensor, secondSensor) + "\", \"date\": \"" + getDate(rtcTime) + "\", \"time\": \"" + getTime(rtcTime) + "\", \"quantity\": \"1\"}");
+
+    tmElements_t tm;
+
+    
+
+    if (! RTC.read(tm)){
+      Serial.println("{\"direction\": \"" + getDirection(firstSensor, secondSensor) + "\", \"date\": \"" + getDate(tm) + "\", \"time\": \"" + getTime(tm) + "\", \"quantity\": \"1\"}");
+    }
+//Serial.println(tm.Hour);
+    
     firstSensor = 0;
     secondSensor = 0;
     activated = 0;
@@ -76,16 +86,22 @@ String getDirection(int first, int second) {
     return "S"; //saída
 }
 
-String getDate(DateTime now) {
+String getDate(tmElements_t tmNow) {
   String dateStr;
-  //dateStr = String(now.year()) + '-' + String(now.month()) + '-' + String(now.day());
-  dateStr = "2018-12-01";
+  dateStr = String(tmNow.Year + 1970) + '-' + parseTwoDigits(String(tmNow.Month)) + '-' + parseTwoDigits(String(tmNow.Day));
+  //dateStr = "2018-12-01";
   return dateStr;  
 }
 
-String getTime(DateTime now) {
+String getTime(tmElements_t tmNow) {
   String timeStr;
-  //timeStr = String(now.hour()) + ':' + String(now.minute()) + ':' + String(now.second());
-  timeStr = "12:01:23";
+  timeStr = parseTwoDigits(String(tmNow.Hour)) + ':' + parseTwoDigits(String(tmNow.Minute)) + ':' + parseTwoDigits(String(tmNow.Second));
+//  timeStr = "12:01:23";
   return timeStr;  
+}
+
+String parseTwoDigits(String digit){
+  if (digit.length() > 1) return digit;
+
+  return '0' + digit;
 }
