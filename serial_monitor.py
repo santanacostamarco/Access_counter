@@ -33,7 +33,7 @@ def clearString(data):
     pass
 
 def recordData(data):
-    #TODO database recording
+    
     queryStr = "INSERT INTO movimento ( movimento, data_hora, quantidade) VALUES ( %s, %s, %s )"
     queryData = (data["direction"], data["date"] + " " + data["time"], data["quantity"])
     dbCursor.execute(queryStr, queryData)
